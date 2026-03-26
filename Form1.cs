@@ -20,10 +20,19 @@ namespace SimpleCalculator
         private bool isNewInput = true;
         // 계산이 완료된 직후인지 여부
         private bool isCalculated = false;
-        // 수식 표시줄에 누적되는 수식 문자열
+        // 수식 표시줄에 누적되는 수식 문자열 (현재 괄호 레벨 내)
         private string expression = "";
         // 연산자가 이미 입력된 상태인지 (연속 연산 판별용)
         private bool hasOperator = false;
+        // 괄호 처리를 위한 상태 저장 스택
+        private Stack<double> parenNumStack = new Stack<double>();
+        private Stack<string> parenOpStack = new Stack<string>();
+        private Stack<bool> parenHasOpStack = new Stack<bool>();
+        private Stack<string> parenExprStack = new Stack<string>();
+        // 현재 열린 괄호 개수
+        private int openParenCount = 0;
+        // 닫는 괄호 직후인지 여부 (수식에 값이 이미 포함됨)
+        private bool isParenResult = false;
 
         public Form1()
         {
@@ -33,9 +42,35 @@ namespace SimpleCalculator
             this.KeyDown += Form1_KeyDown;
         }
 
+        // 스택에 저장된 상위 수식을 포함한 전체 수식 문자열 반환
+        private string GetFullExpression()
+        {
+            string full = "";
+            // 스택은 위에서 아래 순서이므로 뒤집어서 합침
+            string[] exprs = parenExprStack.ToArray();
+            for (int i = exprs.Length - 1; i >= 0; i--)
+                full += exprs[i];
+            full += expression;
+            return full;
+        }
+
         // 키보드 입력 이벤트 핸들러
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            // 여는 괄호 ( : Shift + 9 (숫자키보다 먼저 검사)
+            if (e.Shift && e.KeyCode == Keys.D9)
+            {
+                BtnOpenParen_Click(sender, e);
+                e.Handled = true;
+                return;
+            }
+            // 닫는 괄호 ) : Shift + 0
+            if (e.Shift && e.KeyCode == Keys.D0)
+            {
+                BtnCloseParen_Click(sender, e);
+                e.Handled = true;
+                return;
+            }
             // 숫자키 0~9 (메인 키보드)
             if (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9 && !e.Shift)
             {
@@ -106,6 +141,12 @@ namespace SimpleCalculator
         // 숫자 입력 처리 공통 메서드
         private void InputNumber(string number)
         {
+            // 괄호 결과 직후 숫자 입력 시 곱하기 자동 삽입: (3)5 → (3) x 5
+            if (isParenResult)
+            {
+                SetOperator("*");
+            }
+
             // 계산 완료 후 새 숫자를 누르면 전체 초기화
             if (isCalculated)
             {
@@ -129,7 +170,7 @@ namespace SimpleCalculator
             }
 
             // 수식 표시줄에 현재까지의 수식 + 입력 중인 숫자 실시간 반영
-            txtExpression.Text = expression + txtDisplay.Text;
+            txtExpression.Text = GetFullExpression() + txtDisplay.Text;
         }
 
         // 숫자 버튼 클릭 이벤트 핸들러
@@ -142,6 +183,12 @@ namespace SimpleCalculator
         // 소수점 입력 처리 메서드
         private void InputDot()
         {
+            // 괄호 결과 직후 소수점 입력 시 곱하기 자동 삽입
+            if (isParenResult)
+            {
+                SetOperator("*");
+            }
+
             // 계산 완료 후 소수점을 누르면 새로 시작
             if (isCalculated)
             {
@@ -165,7 +212,7 @@ namespace SimpleCalculator
             }
 
             // 수식 표시줄 실시간 반영
-            txtExpression.Text = expression + txtDisplay.Text;
+            txtExpression.Text = GetFullExpression() + txtDisplay.Text;
         }
 
         // 소수점 버튼 클릭 이벤트 핸들러
@@ -190,18 +237,29 @@ namespace SimpleCalculator
         // 연산자 설정 공통 메서드
         private void SetOperator(string op)
         {
-            // 연산자를 연속으로 누른 경우 (예: + 누른 후 - 로 변경)
-            if (hasOperator && isNewInput)
+            // 연산자를 연속으로 누른 경우 마지막 연산자만 교체 (괄호 결과 직후가 아닐 때)
+            if (hasOperator && isNewInput && !isParenResult)
             {
-                // 마지막 연산자만 교체 (수식에서 이전 연산자 기호를 새 기호로 변경)
                 currentOperator = op;
                 // 수식 끝부분의 "연산자 " 를 새 연산자로 교체
                 string trimmed = expression.TrimEnd();
-                // 마지막 연산자 기호 제거 후 새 기호 추가
                 int lastSpace = trimmed.LastIndexOf(' ');
                 if (lastSpace >= 0)
                     expression = trimmed.Substring(0, lastSpace) + " " + GetOperatorSymbol(op) + " ";
-                txtExpression.Text = expression;
+                txtExpression.Text = GetFullExpression();
+                return;
+            }
+
+            // 괄호 결과 직후 연산자 입력 (수식에 값이 이미 포함되어 있음)
+            if (isParenResult)
+            {
+                expression += " " + GetOperatorSymbol(op) + " ";
+                currentOperator = op;
+                hasOperator = true;
+                isParenResult = false;
+                isNewInput = true;
+                isCalculated = false;
+                txtExpression.Text = GetFullExpression();
                 return;
             }
 
@@ -221,10 +279,7 @@ namespace SimpleCalculator
                 {
                     txtDisplay.Text = "0으로 나눌 수 없습니다";
                     txtExpression.Text = "";
-                    expression = "";
-                    currentOperator = "";
-                    hasOperator = false;
-                    isNewInput = true;
+                    ResetAll();
                     return;
                 }
 
@@ -243,9 +298,9 @@ namespace SimpleCalculator
             currentOperator = op;
             isCalculated = false;
             hasOperator = true;
-
-            txtExpression.Text = expression;
             isNewInput = true;
+
+            txtExpression.Text = GetFullExpression();
         }
 
         // 두 숫자와 연산자로 계산을 수행하는 메서드
@@ -292,6 +347,26 @@ namespace SimpleCalculator
         // 등호 버튼 클릭 이벤트 핸들러
         private void BtnEquals_Click(object sender, EventArgs e)
         {
+            // 열린 괄호가 남아있으면 자동으로 닫기
+            while (openParenCount > 0)
+            {
+                CloseParenInternal();
+            }
+
+            // 괄호 결과만 있고 연산자가 없는 경우 (예: (5+3)= )
+            if (isParenResult && string.IsNullOrEmpty(currentOperator))
+            {
+                txtExpression.Text = GetFullExpression() + " = " + FormatNumber(num1);
+                txtDisplay.Text = FormatNumber(num1);
+                currentOperator = "";
+                hasOperator = false;
+                expression = "";
+                isParenResult = false;
+                isNewInput = true;
+                isCalculated = true;
+                return;
+            }
+
             // 연산자가 선택되지 않았으면 아무것도 하지 않음
             if (string.IsNullOrEmpty(currentOperator))
                 return;
@@ -307,15 +382,12 @@ namespace SimpleCalculator
             {
                 txtDisplay.Text = "0으로 나눌 수 없습니다";
                 txtExpression.Text = "";
-                expression = "";
-                currentOperator = "";
-                hasOperator = false;
-                isNewInput = true;
+                ResetAll();
                 return;
             }
 
             // 수식 표시줄에 전체 수식과 결과 표시
-            txtExpression.Text = expression + FormatNumber(num2) + " = " + FormatNumber(result);
+            txtExpression.Text = GetFullExpression() + FormatNumber(num2) + " = " + FormatNumber(result);
             // 결과값 표시
             txtDisplay.Text = FormatNumber(result);
 
@@ -324,8 +396,150 @@ namespace SimpleCalculator
             currentOperator = "";
             hasOperator = false;
             expression = "";
+            isParenResult = false;
             isNewInput = true;
             isCalculated = true;
+        }
+
+        // 여는 괄호 버튼 클릭 이벤트 핸들러
+        private void BtnOpenParen_Click(object sender, EventArgs e)
+        {
+            // 계산 완료 후 괄호를 누르면 새로 시작
+            if (isCalculated)
+            {
+                expression = "";
+                isCalculated = false;
+                num1 = 0;
+                currentOperator = "";
+                hasOperator = false;
+                isParenResult = false;
+            }
+
+            // 숫자 입력 직후 또는 괄호 닫은 직후면 곱하기 자동 삽입: 5( → 5 x (, (3)(2) → (3) x (2)
+            if (!isNewInput || isParenResult)
+            {
+                SetOperator("*");
+            }
+
+            // 현재 상태를 스택에 저장
+            parenNumStack.Push(num1);
+            parenOpStack.Push(currentOperator);
+            parenHasOpStack.Push(hasOperator);
+            parenExprStack.Push(expression);
+
+            // 괄호 내부를 위한 상태 초기화
+            num1 = 0;
+            currentOperator = "";
+            hasOperator = false;
+            isParenResult = false;
+            openParenCount++;
+
+            // 새 괄호 내부의 수식은 "("로 시작
+            expression = "(";
+            txtExpression.Text = GetFullExpression();
+            txtDisplay.Text = "0";
+            isNewInput = true;
+        }
+
+        // 닫는 괄호 버튼 클릭 이벤트 핸들러
+        private void BtnCloseParen_Click(object sender, EventArgs e)
+        {
+            CloseParenInternal();
+        }
+
+        // 괄호 닫기 내부 처리 (= 버튼에서도 호출)
+        private void CloseParenInternal()
+        {
+            // 열린 괄호가 없으면 무시
+            if (openParenCount <= 0)
+                return;
+
+            // 괄호 안의 최종 결과 계산
+            double parenResult = 0;
+
+            if (hasOperator)
+            {
+                // 괄호 안에 미완성 연산이 있으면 계산 수행
+                double num2 = 0;
+                double.TryParse(txtDisplay.Text, out num2);
+                parenResult = Calculate(num1, num2, currentOperator);
+
+                if (double.IsInfinity(parenResult) || double.IsNaN(parenResult))
+                {
+                    txtDisplay.Text = "0으로 나눌 수 없습니다";
+                    txtExpression.Text = "";
+                    ResetAll();
+                    return;
+                }
+
+                // 수식에 마지막 피연산자 추가 (괄호 결과가 아닌 경우만)
+                if (!isParenResult)
+                    expression += FormatNumber(num2);
+            }
+            else
+            {
+                // 연산자 없이 괄호만 닫는 경우 현재 값을 결과로 사용
+                double.TryParse(txtDisplay.Text, out parenResult);
+                // 수식에 값 추가 (괄호 결과가 아닌 경우만)
+                if (!isParenResult)
+                    expression += FormatNumber(parenResult);
+            }
+
+            // 닫는 괄호 추가
+            expression += ")";
+            openParenCount--;
+
+            // 스택에서 이전 상태 복원
+            double prevNum = parenNumStack.Pop();
+            string prevOp = parenOpStack.Pop();
+            bool prevHasOp = parenHasOpStack.Pop();
+            string prevExpr = parenExprStack.Pop();
+
+            // 이전에 연산자가 있었으면 이전 값과 괄호 결과를 계산
+            if (prevHasOp && !string.IsNullOrEmpty(prevOp))
+            {
+                num1 = Calculate(prevNum, parenResult, prevOp);
+
+                if (double.IsInfinity(num1) || double.IsNaN(num1))
+                {
+                    txtDisplay.Text = "0으로 나눌 수 없습니다";
+                    txtExpression.Text = "";
+                    ResetAll();
+                    return;
+                }
+            }
+            else
+            {
+                num1 = parenResult;
+            }
+
+            // 수식 표시줄 갱신 (상위 수식 + 현재 괄호 수식)
+            expression = prevExpr + expression;
+            txtExpression.Text = GetFullExpression();
+            txtDisplay.Text = FormatNumber(num1);
+
+            // 괄호 결과 이후 상태 설정
+            currentOperator = "";
+            hasOperator = false;
+            isParenResult = true;
+            isNewInput = true;
+        }
+
+        // 전체 상태 초기화 메서드
+        private void ResetAll()
+        {
+            num1 = 0;
+            currentOperator = "";
+            isNewInput = true;
+            isCalculated = false;
+            hasOperator = false;
+            isParenResult = false;
+            expression = "";
+            openParenCount = 0;
+            parenNumStack.Clear();
+            parenOpStack.Clear();
+            parenHasOpStack.Clear();
+            parenExprStack.Clear();
         }
 
         // +/- 부호 전환 버튼 클릭 이벤트 핸들러
@@ -342,19 +556,14 @@ namespace SimpleCalculator
                 value = -value;
                 txtDisplay.Text = FormatNumber(value);
                 // 수식 표시줄에 부호 전환 반영
-                txtExpression.Text = expression + txtDisplay.Text;
+                txtExpression.Text = GetFullExpression() + txtDisplay.Text;
             }
         }
 
         // C 버튼 클릭 - 모든 내용 삭제하고 초기 상태로 되돌림
         private void BtnC_Click(object sender, EventArgs e)
         {
-            num1 = 0;
-            currentOperator = "";
-            isNewInput = true;
-            isCalculated = false;
-            hasOperator = false;
-            expression = "";
+            ResetAll();
             txtDisplay.Text = "0";
             txtExpression.Text = "";
         }
@@ -365,14 +574,14 @@ namespace SimpleCalculator
             txtDisplay.Text = "0";
             isNewInput = true;
             // 수식 표시줄에서 현재 입력 중인 숫자 부분 제거
-            txtExpression.Text = expression;
+            txtExpression.Text = GetFullExpression();
         }
 
         // Del 버튼 클릭 - 마지막 입력된 숫자 한 글자를 삭제
         private void BtnDel_Click(object sender, EventArgs e)
         {
-            // 계산 완료 후에는 Del이 동작하지 않도록 방지
-            if (isCalculated)
+            // 계산 완료 후 또는 괄호 결과 직후에는 Del이 동작하지 않음
+            if (isCalculated || isParenResult)
                 return;
 
             // 현재 표시된 텍스트가 한 글자이거나 비어있으면 0으로 설정
@@ -397,7 +606,7 @@ namespace SimpleCalculator
             }
 
             // 수식 표시줄에 삭제 후 상태 반영
-            txtExpression.Text = expression + txtDisplay.Text;
+            txtExpression.Text = GetFullExpression() + txtDisplay.Text;
         }
 
         private void Form1_Load(object sender, EventArgs e)

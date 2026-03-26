@@ -31,6 +31,8 @@ namespace SimpleCalculator
             this.lblTitle = new System.Windows.Forms.Label();
             this.txtExpression = new System.Windows.Forms.TextBox();
             this.txtDisplay = new System.Windows.Forms.TextBox();
+            this.btnOpenParen = new System.Windows.Forms.Button();
+            this.btnCloseParen = new System.Windows.Forms.Button();
             this.btnCE = new System.Windows.Forms.Button();
             this.btnC = new System.Windows.Forms.Button();
             this.btnDel = new System.Windows.Forms.Button();
@@ -84,35 +86,57 @@ namespace SimpleCalculator
             this.txtDisplay.TabIndex = 2;
             this.txtDisplay.Text = "0";
             this.txtDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
+            //
+            // btnOpenParen
+            //
+            this.btnOpenParen.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnOpenParen.Location = new System.Drawing.Point(1, 343);
+            this.btnOpenParen.Name = "btnOpenParen";
+            this.btnOpenParen.Size = new System.Drawing.Size(96, 97);
+            this.btnOpenParen.TabIndex = 23;
+            this.btnOpenParen.Text = "(";
+            this.btnOpenParen.UseVisualStyleBackColor = true;
+            this.btnOpenParen.Click += new System.EventHandler(this.BtnOpenParen_Click);
+            //
+            // btnCloseParen
+            //
+            this.btnCloseParen.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnCloseParen.Location = new System.Drawing.Point(99, 343);
+            this.btnCloseParen.Name = "btnCloseParen";
+            this.btnCloseParen.Size = new System.Drawing.Size(96, 97);
+            this.btnCloseParen.TabIndex = 24;
+            this.btnCloseParen.Text = ")";
+            this.btnCloseParen.UseVisualStyleBackColor = true;
+            this.btnCloseParen.Click += new System.EventHandler(this.BtnCloseParen_Click);
+            //
             // btnCE
-            // 
+            //
             this.btnCE.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnCE.Location = new System.Drawing.Point(1, 343);
+            this.btnCE.Location = new System.Drawing.Point(197, 343);
             this.btnCE.Name = "btnCE";
-            this.btnCE.Size = new System.Drawing.Size(162, 97);
+            this.btnCE.Size = new System.Drawing.Size(96, 97);
             this.btnCE.TabIndex = 3;
             this.btnCE.Text = "CE";
             this.btnCE.UseVisualStyleBackColor = true;
             this.btnCE.Click += new System.EventHandler(this.BtnCE_Click);
-            // 
+            //
             // btnC
-            // 
+            //
             this.btnC.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnC.Location = new System.Drawing.Point(169, 343);
+            this.btnC.Location = new System.Drawing.Point(295, 343);
             this.btnC.Name = "btnC";
-            this.btnC.Size = new System.Drawing.Size(162, 97);
+            this.btnC.Size = new System.Drawing.Size(96, 97);
             this.btnC.TabIndex = 4;
             this.btnC.Text = "C";
             this.btnC.UseVisualStyleBackColor = true;
             this.btnC.Click += new System.EventHandler(this.BtnC_Click);
-            // 
+            //
             // btnDel
-            // 
+            //
             this.btnDel.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnDel.Location = new System.Drawing.Point(329, 343);
+            this.btnDel.Location = new System.Drawing.Point(393, 343);
             this.btnDel.Name = "btnDel";
-            this.btnDel.Size = new System.Drawing.Size(162, 97);
+            this.btnDel.Size = new System.Drawing.Size(96, 97);
             this.btnDel.TabIndex = 5;
             this.btnDel.Text = "del";
             this.btnDel.UseVisualStyleBackColor = true;
@@ -317,6 +341,8 @@ namespace SimpleCalculator
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.txtExpression);
             this.Controls.Add(this.txtDisplay);
+            this.Controls.Add(this.btnOpenParen);
+            this.Controls.Add(this.btnCloseParen);
             this.Controls.Add(this.btnCE);
             this.Controls.Add(this.btnC);
             this.Controls.Add(this.btnDel);
@@ -354,6 +380,8 @@ namespace SimpleCalculator
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.TextBox txtExpression;
         private System.Windows.Forms.TextBox txtDisplay;
+        private System.Windows.Forms.Button btnOpenParen;
+        private System.Windows.Forms.Button btnCloseParen;
         private System.Windows.Forms.Button btnCE;
         private System.Windows.Forms.Button btnC;
         private System.Windows.Forms.Button btnDel;
