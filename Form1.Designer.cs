@@ -52,259 +52,262 @@ namespace SimpleCalculator
             this.btnDot = new System.Windows.Forms.Button();
             this.btnEquals = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            //
-            // lblTitle - 타이틀 라벨
-            //
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Regular);
+            // 
+            // lblTitle
+            // 
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F);
             this.lblTitle.ForeColor = System.Drawing.Color.Navy;
-            this.lblTitle.Location = new System.Drawing.Point(12, 9);
+            this.lblTitle.Location = new System.Drawing.Point(150, 9);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(360, 45);
+            this.lblTitle.Size = new System.Drawing.Size(360, 185);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Simple Calculator";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
-            // txtExpression - 수식 표시 텍스트박스
-            //
+            // 
+            // txtExpression
+            // 
             this.txtExpression.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.txtExpression.Location = new System.Drawing.Point(12, 60);
+            this.txtExpression.Location = new System.Drawing.Point(104, 184);
             this.txtExpression.Name = "txtExpression";
             this.txtExpression.ReadOnly = true;
-            this.txtExpression.Size = new System.Drawing.Size(360, 29);
+            this.txtExpression.Size = new System.Drawing.Size(360, 61);
             this.txtExpression.TabIndex = 1;
-            //
-            // txtDisplay - 현재 입력값/결과 표시 텍스트박스
-            //
+            // 
+            // txtDisplay
+            // 
             this.txtDisplay.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.txtDisplay.Location = new System.Drawing.Point(12, 95);
+            this.txtDisplay.Location = new System.Drawing.Point(104, 263);
             this.txtDisplay.Name = "txtDisplay";
             this.txtDisplay.ReadOnly = true;
-            this.txtDisplay.Size = new System.Drawing.Size(360, 32);
+            this.txtDisplay.Size = new System.Drawing.Size(462, 70);
             this.txtDisplay.TabIndex = 2;
             this.txtDisplay.Text = "0";
             this.txtDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            //
+            // 
             // btnCE
-            //
+            // 
             this.btnCE.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnCE.Location = new System.Drawing.Point(12, 140);
+            this.btnCE.Location = new System.Drawing.Point(1, 343);
             this.btnCE.Name = "btnCE";
-            this.btnCE.Size = new System.Drawing.Size(85, 45);
+            this.btnCE.Size = new System.Drawing.Size(162, 97);
             this.btnCE.TabIndex = 3;
             this.btnCE.Text = "CE";
             this.btnCE.UseVisualStyleBackColor = true;
-            //
+            // 
             // btnC
-            //
+            // 
             this.btnC.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnC.Location = new System.Drawing.Point(103, 140);
+            this.btnC.Location = new System.Drawing.Point(169, 343);
             this.btnC.Name = "btnC";
-            this.btnC.Size = new System.Drawing.Size(85, 45);
+            this.btnC.Size = new System.Drawing.Size(162, 97);
             this.btnC.TabIndex = 4;
             this.btnC.Text = "C";
             this.btnC.UseVisualStyleBackColor = true;
-            //
+            // 
             // btnDel
-            //
+            // 
             this.btnDel.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnDel.Location = new System.Drawing.Point(194, 140);
+            this.btnDel.Location = new System.Drawing.Point(329, 343);
             this.btnDel.Name = "btnDel";
-            this.btnDel.Size = new System.Drawing.Size(85, 45);
+            this.btnDel.Size = new System.Drawing.Size(162, 97);
             this.btnDel.TabIndex = 5;
             this.btnDel.Text = "del";
             this.btnDel.UseVisualStyleBackColor = true;
-            //
-            // btnDivide - 나누기 버튼
-            //
+            // 
+            // btnDivide
+            // 
             this.btnDivide.Font = new System.Drawing.Font("Segoe UI", 14F);
             this.btnDivide.ForeColor = System.Drawing.Color.Red;
-            this.btnDivide.Location = new System.Drawing.Point(285, 140);
+            this.btnDivide.Location = new System.Drawing.Point(497, 339);
             this.btnDivide.Name = "btnDivide";
-            this.btnDivide.Size = new System.Drawing.Size(87, 45);
+            this.btnDivide.Size = new System.Drawing.Size(164, 97);
             this.btnDivide.TabIndex = 6;
-            this.btnDivide.Text = "\u00f7";
+            this.btnDivide.Text = "÷";
             this.btnDivide.UseVisualStyleBackColor = true;
-            //
+            this.btnDivide.Click += new System.EventHandler(this.BtnOperator_Click);
+            // 
             // btn7
-            //
+            // 
             this.btn7.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn7.Location = new System.Drawing.Point(12, 191);
+            this.btn7.Location = new System.Drawing.Point(1, 446);
             this.btn7.Name = "btn7";
-            this.btn7.Size = new System.Drawing.Size(85, 45);
+            this.btn7.Size = new System.Drawing.Size(162, 97);
             this.btn7.TabIndex = 7;
             this.btn7.Text = "7";
             this.btn7.UseVisualStyleBackColor = true;
             this.btn7.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
+            // 
             // btn8
-            //
+            // 
             this.btn8.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn8.Location = new System.Drawing.Point(103, 191);
+            this.btn8.Location = new System.Drawing.Point(165, 446);
             this.btn8.Name = "btn8";
-            this.btn8.Size = new System.Drawing.Size(85, 45);
+            this.btn8.Size = new System.Drawing.Size(162, 97);
             this.btn8.TabIndex = 8;
             this.btn8.Text = "8";
             this.btn8.UseVisualStyleBackColor = true;
             this.btn8.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
+            // 
             // btn9
-            //
+            // 
             this.btn9.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn9.Location = new System.Drawing.Point(194, 191);
+            this.btn9.Location = new System.Drawing.Point(329, 446);
             this.btn9.Name = "btn9";
-            this.btn9.Size = new System.Drawing.Size(85, 45);
+            this.btn9.Size = new System.Drawing.Size(162, 97);
             this.btn9.TabIndex = 9;
             this.btn9.Text = "9";
             this.btn9.UseVisualStyleBackColor = true;
             this.btn9.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
-            // btnMultiply - 곱하기 버튼
-            //
+            // 
+            // btnMultiply
+            // 
             this.btnMultiply.Font = new System.Drawing.Font("Segoe UI", 14F);
             this.btnMultiply.ForeColor = System.Drawing.Color.Red;
-            this.btnMultiply.Location = new System.Drawing.Point(285, 191);
+            this.btnMultiply.Location = new System.Drawing.Point(497, 442);
             this.btnMultiply.Name = "btnMultiply";
-            this.btnMultiply.Size = new System.Drawing.Size(87, 45);
+            this.btnMultiply.Size = new System.Drawing.Size(164, 97);
             this.btnMultiply.TabIndex = 10;
             this.btnMultiply.Text = "x";
             this.btnMultiply.UseVisualStyleBackColor = true;
-            //
+            this.btnMultiply.Click += new System.EventHandler(this.BtnOperator_Click);
+            // 
             // btn4
-            //
+            // 
             this.btn4.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn4.Location = new System.Drawing.Point(12, 242);
+            this.btn4.Location = new System.Drawing.Point(1, 545);
             this.btn4.Name = "btn4";
-            this.btn4.Size = new System.Drawing.Size(85, 45);
+            this.btn4.Size = new System.Drawing.Size(162, 97);
             this.btn4.TabIndex = 11;
             this.btn4.Text = "4";
             this.btn4.UseVisualStyleBackColor = true;
             this.btn4.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
+            // 
             // btn5
-            //
+            // 
             this.btn5.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn5.Location = new System.Drawing.Point(103, 242);
+            this.btn5.Location = new System.Drawing.Point(169, 545);
             this.btn5.Name = "btn5";
-            this.btn5.Size = new System.Drawing.Size(85, 45);
+            this.btn5.Size = new System.Drawing.Size(162, 97);
             this.btn5.TabIndex = 12;
             this.btn5.Text = "5";
             this.btn5.UseVisualStyleBackColor = true;
             this.btn5.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
+            // 
             // btn6
-            //
+            // 
             this.btn6.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn6.Location = new System.Drawing.Point(194, 242);
+            this.btn6.Location = new System.Drawing.Point(331, 545);
             this.btn6.Name = "btn6";
-            this.btn6.Size = new System.Drawing.Size(85, 45);
+            this.btn6.Size = new System.Drawing.Size(162, 97);
             this.btn6.TabIndex = 13;
             this.btn6.Text = "6";
             this.btn6.UseVisualStyleBackColor = true;
             this.btn6.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
-            // btnSubtract - 빼기 버튼
-            //
+            // 
+            // btnSubtract
+            // 
             this.btnSubtract.Font = new System.Drawing.Font("Segoe UI", 14F);
             this.btnSubtract.ForeColor = System.Drawing.Color.Red;
-            this.btnSubtract.Location = new System.Drawing.Point(285, 242);
+            this.btnSubtract.Location = new System.Drawing.Point(499, 545);
             this.btnSubtract.Name = "btnSubtract";
-            this.btnSubtract.Size = new System.Drawing.Size(87, 45);
+            this.btnSubtract.Size = new System.Drawing.Size(164, 97);
             this.btnSubtract.TabIndex = 14;
             this.btnSubtract.Text = "-";
             this.btnSubtract.UseVisualStyleBackColor = true;
-            //
+            this.btnSubtract.Click += new System.EventHandler(this.BtnOperator_Click);
+            // 
             // btn1
-            //
+            // 
             this.btn1.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn1.Location = new System.Drawing.Point(12, 293);
+            this.btn1.Location = new System.Drawing.Point(1, 648);
             this.btn1.Name = "btn1";
-            this.btn1.Size = new System.Drawing.Size(85, 45);
+            this.btn1.Size = new System.Drawing.Size(160, 97);
             this.btn1.TabIndex = 15;
             this.btn1.Text = "1";
             this.btn1.UseVisualStyleBackColor = true;
             this.btn1.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
+            // 
             // btn2
-            //
+            // 
             this.btn2.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn2.Location = new System.Drawing.Point(103, 293);
+            this.btn2.Location = new System.Drawing.Point(167, 648);
             this.btn2.Name = "btn2";
-            this.btn2.Size = new System.Drawing.Size(85, 45);
+            this.btn2.Size = new System.Drawing.Size(160, 97);
             this.btn2.TabIndex = 16;
             this.btn2.Text = "2";
             this.btn2.UseVisualStyleBackColor = true;
             this.btn2.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
+            // 
             // btn3
-            //
+            // 
             this.btn3.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn3.Location = new System.Drawing.Point(194, 293);
+            this.btn3.Location = new System.Drawing.Point(333, 648);
             this.btn3.Name = "btn3";
-            this.btn3.Size = new System.Drawing.Size(85, 45);
+            this.btn3.Size = new System.Drawing.Size(160, 97);
             this.btn3.TabIndex = 17;
             this.btn3.Text = "3";
             this.btn3.UseVisualStyleBackColor = true;
             this.btn3.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
-            // btnAdd - 더하기 버튼
-            //
+            // 
+            // btnAdd
+            // 
             this.btnAdd.Font = new System.Drawing.Font("Segoe UI", 14F);
             this.btnAdd.ForeColor = System.Drawing.Color.Red;
-            this.btnAdd.Location = new System.Drawing.Point(285, 293);
+            this.btnAdd.Location = new System.Drawing.Point(499, 648);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(87, 45);
+            this.btnAdd.Size = new System.Drawing.Size(162, 97);
             this.btnAdd.TabIndex = 18;
             this.btnAdd.Text = "+";
             this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
-            //
-            // btnSign - 부호 전환 버튼
-            //
+            this.btnAdd.Click += new System.EventHandler(this.BtnOperator_Click);
+            // 
+            // btnSign
+            // 
             this.btnSign.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btnSign.Location = new System.Drawing.Point(12, 344);
+            this.btnSign.Location = new System.Drawing.Point(1, 760);
             this.btnSign.Name = "btnSign";
-            this.btnSign.Size = new System.Drawing.Size(85, 45);
+            this.btnSign.Size = new System.Drawing.Size(162, 80);
             this.btnSign.TabIndex = 19;
             this.btnSign.Text = "+/-";
             this.btnSign.UseVisualStyleBackColor = true;
-            //
+            // 
             // btn0
-            //
+            // 
             this.btn0.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btn0.Location = new System.Drawing.Point(103, 344);
+            this.btn0.Location = new System.Drawing.Point(169, 760);
             this.btn0.Name = "btn0";
-            this.btn0.Size = new System.Drawing.Size(85, 45);
+            this.btn0.Size = new System.Drawing.Size(162, 80);
             this.btn0.TabIndex = 20;
             this.btn0.Text = "0";
             this.btn0.UseVisualStyleBackColor = true;
             this.btn0.Click += new System.EventHandler(this.BtnNumber_Click);
-            //
-            // btnDot - 소수점 버튼
-            //
+            // 
+            // btnDot
+            // 
             this.btnDot.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btnDot.Location = new System.Drawing.Point(194, 344);
+            this.btnDot.Location = new System.Drawing.Point(337, 760);
             this.btnDot.Name = "btnDot";
-            this.btnDot.Size = new System.Drawing.Size(85, 45);
+            this.btnDot.Size = new System.Drawing.Size(162, 80);
             this.btnDot.TabIndex = 21;
             this.btnDot.Text = ".";
             this.btnDot.UseVisualStyleBackColor = true;
-            //
-            // btnEquals - 결과 버튼
-            //
+            // 
+            // btnEquals
+            // 
             this.btnEquals.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.btnEquals.Location = new System.Drawing.Point(285, 344);
+            this.btnEquals.Location = new System.Drawing.Point(505, 760);
             this.btnEquals.Name = "btnEquals";
-            this.btnEquals.Size = new System.Drawing.Size(87, 45);
+            this.btnEquals.Size = new System.Drawing.Size(164, 80);
             this.btnEquals.TabIndex = 22;
             this.btnEquals.Text = "=";
             this.btnEquals.UseVisualStyleBackColor = true;
             this.btnEquals.Click += new System.EventHandler(this.BtnEquals_Click);
-            //
-            // Form1 - 메인 폼
-            //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 41F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 401);
+            this.ClientSize = new System.Drawing.Size(673, 845);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.txtExpression);
             this.Controls.Add(this.txtDisplay);
@@ -334,8 +337,10 @@ namespace SimpleCalculator
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Calculator v1.0";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion

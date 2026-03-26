@@ -46,14 +46,39 @@ namespace SimpleCalculator
             }
         }
 
-        // 더하기 버튼 클릭 이벤트 핸들러
-        private void BtnAdd_Click(object sender, EventArgs e)
+        // 연산자 기호를 표시용 문자로 변환하는 메서드
+        private string GetOperatorSymbol(string op)
         {
+            switch (op)
+            {
+                case "+": return "+";
+                case "-": return "-";
+                case "*": return "x";
+                case "/": return "\u00f7";
+                default: return op;
+            }
+        }
+
+        // 연산자 버튼 클릭 이벤트 핸들러 (사칙연산 공통)
+        private void BtnOperator_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+
             // 현재 표시된 값을 첫 번째 피연산자로 저장
             num1 = int.Parse(txtDisplay.Text);
-            currentOperator = "+";
-            // 수식 표시줄에 입력 내용 표시
-            txtExpression.Text = num1.ToString() + " + ";
+
+            // 버튼 텍스트에서 연산자 결정
+            if (btn == btnAdd)
+                currentOperator = "+";
+            else if (btn == btnSubtract)
+                currentOperator = "-";
+            else if (btn == btnMultiply)
+                currentOperator = "*";
+            else if (btn == btnDivide)
+                currentOperator = "/";
+
+            // 수식 표시줄에 첫 번째 피연산자와 연산자 표시
+            txtExpression.Text = num1.ToString() + " " + GetOperatorSymbol(currentOperator) + " ";
             isNewInput = true;
         }
 
@@ -68,20 +93,46 @@ namespace SimpleCalculator
             int num2 = int.Parse(txtDisplay.Text);
             int result = 0;
 
-            // 더하기 연산 수행
-            if (currentOperator == "+")
+            // 선택된 연산자에 따라 계산 수행
+            switch (currentOperator)
             {
-                result = num1 + num2;
+                case "+":
+                    result = num1 + num2;
+                    break;
+                case "-":
+                    result = num1 - num2;
+                    break;
+                case "*":
+                    result = num1 * num2;
+                    break;
+                case "/":
+                    // 0으로 나누기 방지
+                    if (num2 == 0)
+                    {
+                        txtDisplay.Text = "0으로 나눌 수 없습니다";
+                        txtExpression.Text = "";
+                        currentOperator = "";
+                        isNewInput = true;
+                        return;
+                    }
+                    result = num1 / num2;
+                    break;
             }
 
             // 수식 표시줄에 전체 수식과 결과 표시
-            txtExpression.Text = num1 + " + " + num2 + " = " + result;
+            string symbol = GetOperatorSymbol(currentOperator);
+            txtExpression.Text = num1 + " " + symbol + " " + num2 + " = " + result;
             // 결과값 표시
             txtDisplay.Text = result.ToString();
 
             // 상태 초기화
             currentOperator = "";
             isNewInput = true;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
