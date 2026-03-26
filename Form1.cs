@@ -20,6 +20,10 @@ namespace SimpleCalculator
         private bool isNewInput = true;
         // 계산이 완료된 직후인지 여부
         private bool isCalculated = false;
+        // 수식 표시줄에 누적되는 수식 문자열
+        private string expression = "";
+        // 연산자가 이미 입력된 상태인지 (연속 연산 판별용)
+        private bool hasOperator = false;
 
         public Form1()
         {
@@ -105,7 +109,7 @@ namespace SimpleCalculator
             // 계산 완료 후 새 숫자를 누르면 전체 초기화
             if (isCalculated)
             {
-                txtExpression.Text = "";
+                expression = "";
                 isCalculated = false;
             }
 
@@ -123,6 +127,9 @@ namespace SimpleCalculator
                 else
                     txtDisplay.Text += number;
             }
+
+            // 수식 표시줄에 현재까지의 수식 + 입력 중인 숫자 실시간 반영
+            txtExpression.Text = expression + txtDisplay.Text;
         }
 
         // 숫자 버튼 클릭 이벤트 핸들러
@@ -135,12 +142,18 @@ namespace SimpleCalculator
         // 소수점 입력 처리 메서드
         private void InputDot()
         {
+            // 계산 완료 후 소수점을 누르면 새로 시작
+            if (isCalculated)
+            {
+                expression = "";
+                isCalculated = false;
+            }
+
             // 새 입력 시작이면 "0."으로 표시
             if (isNewInput)
             {
                 txtDisplay.Text = "0.";
                 isNewInput = false;
-                isCalculated = false;
             }
             else
             {
@@ -150,6 +163,9 @@ namespace SimpleCalculator
                     txtDisplay.Text += ".";
                 }
             }
+
+            // 수식 표시줄 실시간 반영
+            txtExpression.Text = expression + txtDisplay.Text;
         }
 
         // 소수점 버튼 클릭 이벤트 핸들러
@@ -174,14 +190,77 @@ namespace SimpleCalculator
         // 연산자 설정 공통 메서드
         private void SetOperator(string op)
         {
-            // 현재 표시된 값을 첫 번째 피연산자로 저장
-            double.TryParse(txtDisplay.Text, out num1);
+            // 연산자를 연속으로 누른 경우 (예: + 누른 후 - 로 변경)
+            if (hasOperator && isNewInput)
+            {
+                // 마지막 연산자만 교체 (수식에서 이전 연산자 기호를 새 기호로 변경)
+                currentOperator = op;
+                // 수식 끝부분의 "연산자 " 를 새 연산자로 교체
+                string trimmed = expression.TrimEnd();
+                // 마지막 연산자 기호 제거 후 새 기호 추가
+                int lastSpace = trimmed.LastIndexOf(' ');
+                if (lastSpace >= 0)
+                    expression = trimmed.Substring(0, lastSpace) + " " + GetOperatorSymbol(op) + " ";
+                txtExpression.Text = expression;
+                return;
+            }
+
+            // 이전 연산자가 있으면 중간 계산 수행 (연속 연산: 8x8x8 등)
+            if (hasOperator && !isNewInput)
+            {
+                double num2 = 0;
+                double.TryParse(txtDisplay.Text, out num2);
+
+                // 수식에 현재 입력된 숫자와 새 연산자를 누적
+                expression += FormatNumber(num2) + " " + GetOperatorSymbol(op) + " ";
+
+                double intermediate = Calculate(num1, num2, currentOperator);
+
+                // 0으로 나누기 오류 처리
+                if (double.IsInfinity(intermediate) || double.IsNaN(intermediate))
+                {
+                    txtDisplay.Text = "0으로 나눌 수 없습니다";
+                    txtExpression.Text = "";
+                    expression = "";
+                    currentOperator = "";
+                    hasOperator = false;
+                    isNewInput = true;
+                    return;
+                }
+
+                num1 = intermediate;
+                // 중간 계산 결과를 하단에 표시
+                txtDisplay.Text = FormatNumber(num1);
+            }
+            else
+            {
+                // 첫 번째 연산자를 누를 때 현재 값을 저장
+                double.TryParse(txtDisplay.Text, out num1);
+                // 수식에 첫 번째 숫자와 연산자 추가
+                expression += FormatNumber(num1) + " " + GetOperatorSymbol(op) + " ";
+            }
+
             currentOperator = op;
             isCalculated = false;
+            hasOperator = true;
 
-            // 수식 표시줄에 첫 번째 피연산자와 연산자 표시
-            txtExpression.Text = FormatNumber(num1) + " " + GetOperatorSymbol(currentOperator) + " ";
+            txtExpression.Text = expression;
             isNewInput = true;
+        }
+
+        // 두 숫자와 연산자로 계산을 수행하는 메서드
+        private double Calculate(double a, double b, string op)
+        {
+            switch (op)
+            {
+                case "+": return a + b;
+                case "-": return a - b;
+                case "*": return a * b;
+                case "/":
+                    if (b == 0) return double.PositiveInfinity;
+                    return a / b;
+                default: return b;
+            }
         }
 
         // 연산자 버튼 클릭 이벤트 핸들러 (사칙연산 공통)
@@ -220,43 +299,31 @@ namespace SimpleCalculator
             // 두 번째 피연산자 가져오기
             double num2 = 0;
             double.TryParse(txtDisplay.Text, out num2);
-            double result = 0;
 
-            // 선택된 연산자에 따라 계산 수행
-            switch (currentOperator)
+            double result = Calculate(num1, num2, currentOperator);
+
+            // 0으로 나누기 오류 처리
+            if (double.IsInfinity(result) || double.IsNaN(result))
             {
-                case "+":
-                    result = num1 + num2;
-                    break;
-                case "-":
-                    result = num1 - num2;
-                    break;
-                case "*":
-                    result = num1 * num2;
-                    break;
-                case "/":
-                    // 0으로 나누기 방지
-                    if (num2 == 0)
-                    {
-                        txtDisplay.Text = "0으로 나눌 수 없습니다";
-                        txtExpression.Text = "";
-                        currentOperator = "";
-                        isNewInput = true;
-                        return;
-                    }
-                    result = num1 / num2;
-                    break;
+                txtDisplay.Text = "0으로 나눌 수 없습니다";
+                txtExpression.Text = "";
+                expression = "";
+                currentOperator = "";
+                hasOperator = false;
+                isNewInput = true;
+                return;
             }
 
             // 수식 표시줄에 전체 수식과 결과 표시
-            string symbol = GetOperatorSymbol(currentOperator);
-            txtExpression.Text = FormatNumber(num1) + " " + symbol + " " + FormatNumber(num2) + " = " + FormatNumber(result);
+            txtExpression.Text = expression + FormatNumber(num2) + " = " + FormatNumber(result);
             // 결과값 표시
             txtDisplay.Text = FormatNumber(result);
 
             // 상태 초기화 (연속 계산을 위해 결과를 num1에 저장)
             num1 = result;
             currentOperator = "";
+            hasOperator = false;
+            expression = "";
             isNewInput = true;
             isCalculated = true;
         }
@@ -274,6 +341,8 @@ namespace SimpleCalculator
                 // 부호를 반대로 전환
                 value = -value;
                 txtDisplay.Text = FormatNumber(value);
+                // 수식 표시줄에 부호 전환 반영
+                txtExpression.Text = expression + txtDisplay.Text;
             }
         }
 
@@ -284,6 +353,8 @@ namespace SimpleCalculator
             currentOperator = "";
             isNewInput = true;
             isCalculated = false;
+            hasOperator = false;
+            expression = "";
             txtDisplay.Text = "0";
             txtExpression.Text = "";
         }
@@ -293,6 +364,8 @@ namespace SimpleCalculator
         {
             txtDisplay.Text = "0";
             isNewInput = true;
+            // 수식 표시줄에서 현재 입력 중인 숫자 부분 제거
+            txtExpression.Text = expression;
         }
 
         // Del 버튼 클릭 - 마지막 입력된 숫자 한 글자를 삭제
@@ -322,6 +395,9 @@ namespace SimpleCalculator
                     txtDisplay.Text = newText;
                 }
             }
+
+            // 수식 표시줄에 삭제 후 상태 반영
+            txtExpression.Text = expression + txtDisplay.Text;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -330,6 +406,11 @@ namespace SimpleCalculator
         }
 
         private void lblTitle_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtExpression_TextChanged(object sender, EventArgs e)
         {
 
         }
