@@ -12,23 +12,102 @@ namespace SimpleCalculator
 {
     public partial class Form1 : Form
     {
-        // 첫 번째 피연산자 저장 변수
-        private int num1 = 0;
+        // 첫 번째 피연산자 저장 변수 (소수점 연산을 위해 double 사용)
+        private double num1 = 0;
         // 현재 선택된 연산자 저장 변수
         private string currentOperator = "";
         // 새로운 숫자 입력 시작 여부
         private bool isNewInput = true;
+        // 계산이 완료된 직후인지 여부
+        private bool isCalculated = false;
 
         public Form1()
         {
             InitializeComponent();
+            // 키보드 입력을 폼에서 직접 받도록 설정
+            this.KeyPreview = true;
+            this.KeyDown += Form1_KeyDown;
         }
 
-        // 숫자 버튼 클릭 이벤트 핸들러
-        private void BtnNumber_Click(object sender, EventArgs e)
+        // 키보드 입력 이벤트 핸들러
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            Button btn = (Button)sender;
-            string number = btn.Text;
+            // 숫자키 0~9 (메인 키보드)
+            if (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9 && !e.Shift)
+            {
+                string num = ((int)(e.KeyCode - Keys.D0)).ToString();
+                InputNumber(num);
+                e.Handled = true;
+            }
+            // 숫자키 0~9 (넘패드)
+            else if (e.KeyCode >= Keys.NumPad0 && e.KeyCode <= Keys.NumPad9)
+            {
+                string num = ((int)(e.KeyCode - Keys.NumPad0)).ToString();
+                InputNumber(num);
+                e.Handled = true;
+            }
+            // 연산자 키
+            else if (e.KeyCode == Keys.Add || (e.Shift && e.KeyCode == Keys.Oemplus))
+            {
+                SetOperator("+");
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
+            {
+                SetOperator("-");
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Multiply || (e.Shift && e.KeyCode == Keys.D8))
+            {
+                SetOperator("*");
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Divide || e.KeyCode == Keys.Oem2)
+            {
+                SetOperator("/");
+                e.Handled = true;
+            }
+            // Enter 또는 = 키로 계산 실행
+            else if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Oemplus)
+            {
+                BtnEquals_Click(sender, e);
+                e.Handled = true;
+            }
+            // Backspace로 Del 기능 수행
+            else if (e.KeyCode == Keys.Back)
+            {
+                BtnDel_Click(sender, e);
+                e.Handled = true;
+            }
+            // Escape로 C(전체 초기화) 기능 수행
+            else if (e.KeyCode == Keys.Escape)
+            {
+                BtnC_Click(sender, e);
+                e.Handled = true;
+            }
+            // Delete로 CE 기능 수행
+            else if (e.KeyCode == Keys.Delete)
+            {
+                BtnCE_Click(sender, e);
+                e.Handled = true;
+            }
+            // 소수점 입력
+            else if (e.KeyCode == Keys.Decimal || e.KeyCode == Keys.OemPeriod)
+            {
+                InputDot();
+                e.Handled = true;
+            }
+        }
+
+        // 숫자 입력 처리 공통 메서드
+        private void InputNumber(string number)
+        {
+            // 계산 완료 후 새 숫자를 누르면 전체 초기화
+            if (isCalculated)
+            {
+                txtExpression.Text = "";
+                isCalculated = false;
+            }
 
             // 새 입력이면 기존 값을 지우고 시작
             if (isNewInput)
@@ -38,12 +117,45 @@ namespace SimpleCalculator
             }
             else
             {
-                // 기존 값이 0이면 새 숫자로 대체
+                // 기존 값이 0이면 새 숫자로 대체 (소수점 입력 중이면 유지)
                 if (txtDisplay.Text == "0")
                     txtDisplay.Text = number;
                 else
                     txtDisplay.Text += number;
             }
+        }
+
+        // 숫자 버튼 클릭 이벤트 핸들러
+        private void BtnNumber_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            InputNumber(btn.Text);
+        }
+
+        // 소수점 입력 처리 메서드
+        private void InputDot()
+        {
+            // 새 입력 시작이면 "0."으로 표시
+            if (isNewInput)
+            {
+                txtDisplay.Text = "0.";
+                isNewInput = false;
+                isCalculated = false;
+            }
+            else
+            {
+                // 이미 소수점이 있으면 추가하지 않음
+                if (!txtDisplay.Text.Contains("."))
+                {
+                    txtDisplay.Text += ".";
+                }
+            }
+        }
+
+        // 소수점 버튼 클릭 이벤트 핸들러
+        private void BtnDot_Click(object sender, EventArgs e)
+        {
+            InputDot();
         }
 
         // 연산자 기호를 표시용 문자로 변환하는 메서드
@@ -59,27 +171,43 @@ namespace SimpleCalculator
             }
         }
 
+        // 연산자 설정 공통 메서드
+        private void SetOperator(string op)
+        {
+            // 현재 표시된 값을 첫 번째 피연산자로 저장
+            double.TryParse(txtDisplay.Text, out num1);
+            currentOperator = op;
+            isCalculated = false;
+
+            // 수식 표시줄에 첫 번째 피연산자와 연산자 표시
+            txtExpression.Text = FormatNumber(num1) + " " + GetOperatorSymbol(currentOperator) + " ";
+            isNewInput = true;
+        }
+
         // 연산자 버튼 클릭 이벤트 핸들러 (사칙연산 공통)
         private void BtnOperator_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
 
-            // 현재 표시된 값을 첫 번째 피연산자로 저장
-            num1 = int.Parse(txtDisplay.Text);
-
-            // 버튼 텍스트에서 연산자 결정
+            // 버튼에 따라 연산자 결정
             if (btn == btnAdd)
-                currentOperator = "+";
+                SetOperator("+");
             else if (btn == btnSubtract)
-                currentOperator = "-";
+                SetOperator("-");
             else if (btn == btnMultiply)
-                currentOperator = "*";
+                SetOperator("*");
             else if (btn == btnDivide)
-                currentOperator = "/";
+                SetOperator("/");
+        }
 
-            // 수식 표시줄에 첫 번째 피연산자와 연산자 표시
-            txtExpression.Text = num1.ToString() + " " + GetOperatorSymbol(currentOperator) + " ";
-            isNewInput = true;
+        // 숫자를 보기 좋게 포맷하는 메서드
+        private string FormatNumber(double value)
+        {
+            // 정수인 경우 소수점 없이 표시
+            if (value == Math.Floor(value) && !double.IsInfinity(value))
+                return ((long)value).ToString();
+            else
+                return value.ToString();
         }
 
         // 등호 버튼 클릭 이벤트 핸들러
@@ -90,8 +218,9 @@ namespace SimpleCalculator
                 return;
 
             // 두 번째 피연산자 가져오기
-            int num2 = int.Parse(txtDisplay.Text);
-            int result = 0;
+            double num2 = 0;
+            double.TryParse(txtDisplay.Text, out num2);
+            double result = 0;
 
             // 선택된 연산자에 따라 계산 수행
             switch (currentOperator)
@@ -121,13 +250,31 @@ namespace SimpleCalculator
 
             // 수식 표시줄에 전체 수식과 결과 표시
             string symbol = GetOperatorSymbol(currentOperator);
-            txtExpression.Text = num1 + " " + symbol + " " + num2 + " = " + result;
+            txtExpression.Text = FormatNumber(num1) + " " + symbol + " " + FormatNumber(num2) + " = " + FormatNumber(result);
             // 결과값 표시
-            txtDisplay.Text = result.ToString();
+            txtDisplay.Text = FormatNumber(result);
 
-            // 상태 초기화
+            // 상태 초기화 (연속 계산을 위해 결과를 num1에 저장)
+            num1 = result;
             currentOperator = "";
             isNewInput = true;
+            isCalculated = true;
+        }
+
+        // +/- 부호 전환 버튼 클릭 이벤트 핸들러
+        private void BtnSign_Click(object sender, EventArgs e)
+        {
+            // 현재 값이 0이면 부호 전환하지 않음
+            if (txtDisplay.Text == "0" || txtDisplay.Text == "")
+                return;
+
+            double value = 0;
+            if (double.TryParse(txtDisplay.Text, out value))
+            {
+                // 부호를 반대로 전환
+                value = -value;
+                txtDisplay.Text = FormatNumber(value);
+            }
         }
 
         // C 버튼 클릭 - 모든 내용 삭제하고 초기 상태로 되돌림
@@ -136,6 +283,7 @@ namespace SimpleCalculator
             num1 = 0;
             currentOperator = "";
             isNewInput = true;
+            isCalculated = false;
             txtDisplay.Text = "0";
             txtExpression.Text = "";
         }
@@ -150,6 +298,10 @@ namespace SimpleCalculator
         // Del 버튼 클릭 - 마지막 입력된 숫자 한 글자를 삭제
         private void BtnDel_Click(object sender, EventArgs e)
         {
+            // 계산 완료 후에는 Del이 동작하지 않도록 방지
+            if (isCalculated)
+                return;
+
             // 현재 표시된 텍스트가 한 글자이거나 비어있으면 0으로 설정
             if (txtDisplay.Text.Length <= 1)
             {
@@ -158,12 +310,26 @@ namespace SimpleCalculator
             }
             else
             {
-                // 마지막 글자 하나를 제거
-                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1);
+                // 음수에서 마지막 숫자를 지워서 "-"만 남는 경우 처리
+                string newText = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1);
+                if (newText == "-" || newText == "")
+                {
+                    txtDisplay.Text = "0";
+                    isNewInput = true;
+                }
+                else
+                {
+                    txtDisplay.Text = newText;
+                }
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblTitle_Click(object sender, EventArgs e)
         {
 
         }

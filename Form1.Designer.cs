@@ -57,17 +57,18 @@ namespace SimpleCalculator
             // 
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F);
             this.lblTitle.ForeColor = System.Drawing.Color.Navy;
-            this.lblTitle.Location = new System.Drawing.Point(150, 9);
+            this.lblTitle.Location = new System.Drawing.Point(150, -6);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(360, 185);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Simple Calculator";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTitle.Click += new System.EventHandler(this.lblTitle_Click);
             // 
             // txtExpression
             // 
             this.txtExpression.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.txtExpression.Location = new System.Drawing.Point(104, 184);
+            this.txtExpression.Location = new System.Drawing.Point(104, 196);
             this.txtExpression.Name = "txtExpression";
             this.txtExpression.ReadOnly = true;
             this.txtExpression.Size = new System.Drawing.Size(360, 61);
@@ -273,6 +274,7 @@ namespace SimpleCalculator
             this.btnSign.TabIndex = 19;
             this.btnSign.Text = "+/-";
             this.btnSign.UseVisualStyleBackColor = true;
+            this.btnSign.Click += new System.EventHandler(this.BtnSign_Click);
             // 
             // btn0
             // 
@@ -294,6 +296,7 @@ namespace SimpleCalculator
             this.btnDot.TabIndex = 21;
             this.btnDot.Text = ".";
             this.btnDot.UseVisualStyleBackColor = true;
+            this.btnDot.Click += new System.EventHandler(this.BtnDot_Click);
             // 
             // btnEquals
             // 
