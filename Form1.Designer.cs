@@ -93,6 +93,7 @@ namespace SimpleCalculator
             this.btnCE.TabIndex = 3;
             this.btnCE.Text = "CE";
             this.btnCE.UseVisualStyleBackColor = true;
+            this.btnCE.Click += new System.EventHandler(this.BtnCE_Click);
             // 
             // btnC
             // 
@@ -103,6 +104,7 @@ namespace SimpleCalculator
             this.btnC.TabIndex = 4;
             this.btnC.Text = "C";
             this.btnC.UseVisualStyleBackColor = true;
+            this.btnC.Click += new System.EventHandler(this.BtnC_Click);
             // 
             // btnDel
             // 
@@ -113,6 +115,7 @@ namespace SimpleCalculator
             this.btnDel.TabIndex = 5;
             this.btnDel.Text = "del";
             this.btnDel.UseVisualStyleBackColor = true;
+            this.btnDel.Click += new System.EventHandler(this.BtnDel_Click);
             // 
             // btnDivide
             // 

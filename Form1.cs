@@ -130,6 +130,39 @@ namespace SimpleCalculator
             isNewInput = true;
         }
 
+        // C 버튼 클릭 - 모든 내용 삭제하고 초기 상태로 되돌림
+        private void BtnC_Click(object sender, EventArgs e)
+        {
+            num1 = 0;
+            currentOperator = "";
+            isNewInput = true;
+            txtDisplay.Text = "0";
+            txtExpression.Text = "";
+        }
+
+        // CE 버튼 클릭 - 마지막 입력한 피연산자 값을 통째로 삭제
+        private void BtnCE_Click(object sender, EventArgs e)
+        {
+            txtDisplay.Text = "0";
+            isNewInput = true;
+        }
+
+        // Del 버튼 클릭 - 마지막 입력된 숫자 한 글자를 삭제
+        private void BtnDel_Click(object sender, EventArgs e)
+        {
+            // 현재 표시된 텍스트가 한 글자이거나 비어있으면 0으로 설정
+            if (txtDisplay.Text.Length <= 1)
+            {
+                txtDisplay.Text = "0";
+                isNewInput = true;
+            }
+            else
+            {
+                // 마지막 글자 하나를 제거
+                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1);
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
